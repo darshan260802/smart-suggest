@@ -1,24 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
+import data from "./words.json";
 
 function App() {
+  const [search, setSearch] = useState<string>("");
+  const [results, setResults] = useState<string[]>([]);
+
+  useEffect(() => {
+    const exp = search.split("_").join("[a-zA-Z]");
+
+    const regExp = new RegExp(`^${exp}$`);
+    let res = (data as string[]).filter((word) => regExp.test(word));
+    setResults(res);
+  }, [search]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Smart Suggest</h1>
+
+      <input
+        type="text"
+        value={search}
+        placeholder="Enter a word"
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <div className="suggestion">
+        <h2>Suggestions</h2>
+        {results.map((word, index) => {
+          return <span key={index}>{word}</span>
+        })}
+      </div>
     </div>
   );
 }
